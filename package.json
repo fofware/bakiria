@@ -1,0 +1,7 @@
+{
+  "devDependencies": {
+    "@angular/cli": "^19.2.7"
+  },
+  "dependencies": {
+  }
+}
