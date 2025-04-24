@@ -1,5 +1,6 @@
+@use "styles/main" as *;
+
 @import url('https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&display=swap');
-@import "./styles/main";
 
 * {
   box-sizing: border-box;
@@ -29,15 +30,13 @@ html, body {
 .brittany {
   font-family: "Brittany", Arial, Helvetica, sans-serif;
   font-size: 2.5rem;
-  color: $bk-quaternary;
 }
+
 .lato {
   font-family: "Lato", Arial, Helvetica, sans-serif;
   font-size: 1.5rem;
-  color: $bk-terciary;
 }
 .florensans {
   font-family: "Florensans", Arial, Helvetica, sans-serif;
   font-size: 3.5rem;
-  color: $bk-primary;
 }

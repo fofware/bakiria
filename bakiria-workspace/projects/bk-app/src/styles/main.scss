@@ -1,4 +1,5 @@
-@import 'abstract/_variables';
+@use 'abstract/_variables' as *;
+
 .font-florensans {
   font-family: "Florensans", Arial, Helvetica, sans-serif;
 }

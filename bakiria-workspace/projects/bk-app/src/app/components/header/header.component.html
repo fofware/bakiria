@@ -1,5 +1,17 @@
 <div class="header">
-  <app-header-logo/>
-  <div class="item" >bakiria</div>
+  <div class="item">
+    <app-header-logo/>
+    <div class="item" style="padding-top: 12px;">
+      <div style='font-family: "Florensans", Arial, Helvetica, sans-serif;font-size: 2.7rem; font-weight: 700;'>{{app().name}}</div>
+    </div>
+  </div>
+  <div class="item">
+    <app-menu/>
+  </div>
+  <div class="item">
+    <app-buttons
+      [data]="user()"
+
+    />
+  </div>
 </div>
-<!--span style='font-size: 2rem'>362 435 9999</!--span-->
