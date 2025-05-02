@@ -7,5 +7,14 @@ import { Component } from '@angular/core';
   styleUrl: './dropdowns.component.css'
 })
 export class DropdownsComponent {
-
+  isOpen = false;
+  toggleDropdown() {
+    this.isOpen = !this.isOpen;
+  }
+  closeDropdown() {
+    this.isOpen = false;
+  }
+  openDropdown() {
+    this.isOpen = true;
+  }
 }

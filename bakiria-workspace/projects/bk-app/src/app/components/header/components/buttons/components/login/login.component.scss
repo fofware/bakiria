@@ -1,46 +1,37 @@
+/*
 :host{
   font-size: 1rem;
-}
-.buttons{
-  position: relative;
-  display: flex;
-  align-content: center;
-  justify-content: space-between;
-  align-items: center;
-  gap : 4px;
-  padding-right: 8px;
-}
-.buttons .item{
   display: flex;
   justify-content: center;
   align-items: center;
   cursor: pointer;
   transition: all .3s ease-in-out;
   border-radius: 48px * 0.5;
+  align-content: center;
+  justify-content: center;
+  height: 100%;
+  width: 100%;
 }
-.buttons .item:hover{
+:host:hover{
   background-color: rgba(255, 255, 255, 0.8);
-
   path[fill]{
     fill: #8475A1;
   }
-
-  svg path{
-    fill: #8475A1;
-  }
 }
-
-.buttons .item:active{
+.item:active{
   background-color: rgba(255, 255, 255, 0.2);
 }
 
-.buttons .item .icon{
+.icon{
   width: 48px;
   height: 48px;
 }
-
-.buttons .item svg path
-{
-  fill: #C3C3C3;
+.icon svg{
+  width: 100%;
+  height: 100%;
 }
 
+.item svg path{
+  fill: #C3C3C3;
+}
+*/

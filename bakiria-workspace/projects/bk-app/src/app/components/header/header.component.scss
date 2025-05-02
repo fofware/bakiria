@@ -7,16 +7,16 @@
   font-family: "Florensans", Arial, Helvetica, sans-serif;
   */
   background-color: $bk-primary;
-  background-color: $bk-lila;
+  background-color: $bk-morado;
   color: $bk-primary;
   display: flex;
   align-items: center;
   justify-content: space-between;
+  color: rgba(255, 255, 255, 0.9);
   height: 60px;
 }
 .header .item {
   display: flex;
-
   justify-content:space-between;
   /*
   padding-top: 12px;

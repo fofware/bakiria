@@ -2,19 +2,21 @@ import { Injectable, signal } from '@angular/core';
 
 export interface User {
   name?: string;
-  authenticated: boolean;
+  isLoggedIn: boolean;
   role: string;
   token: string;
   image: string;
 }
-const resetUsuer:User = {
-  name: '',
-  authenticated: false,
-  role: 'visitor',
-  token: '',
-  image: 'assets/user.png'
-};
 
+const roles = ['admin', 'jefe', 'compras', 'cocinero', 'cliente', 'vendedor'];
+
+const resetUsuer:User = {
+  name: 'Desconocido',
+  isLoggedIn: true,
+  role: 'cliente',
+  token: '',
+  image: ''
+};
 
 export interface appData {
   version?: string;
@@ -22,7 +24,6 @@ export interface appData {
   headerHeight: string;
   logo: string;
 }
-
 
 const resetApp:appData = {
   name: 'bakiria',
@@ -34,9 +35,12 @@ const resetApp:appData = {
 @Injectable({
   providedIn: 'root'
 })
+
 export class AppService {
   public app = signal<appData>(resetApp);
   public user = signal<User>(resetUsuer);
-
+  logout() {
+    this.user.set(resetUsuer);
+  }
 }
 
