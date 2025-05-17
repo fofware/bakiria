@@ -5,17 +5,17 @@ export interface User {
   isLoggedIn: boolean;
   role: string;
   token: string;
-  image: string;
+  image: string | null;
 }
 
 const roles = ['admin', 'jefe', 'compras', 'cocinero', 'cliente', 'vendedor'];
 
 const resetUsuer:User = {
   name: 'Desconocido',
-  isLoggedIn: true,
+  isLoggedIn: false,
   role: 'cliente',
   token: '',
-  image: ''
+  image: null
 };
 
 export interface appData {

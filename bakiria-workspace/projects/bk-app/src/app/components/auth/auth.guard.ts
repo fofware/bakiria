@@ -25,7 +25,7 @@ export class AuthGuard implements CanActivate {
     } else {
       // Si no está autenticado, redirige a la página de login.
       // createUrlTree permite crear una URL Tree para la redirección.
-      return this.router.createUrlTree(['/login']);
+      return this.router.createUrlTree(['/auth/login']);
     }
   }
 }

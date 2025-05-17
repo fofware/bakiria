@@ -51,7 +51,7 @@ import { AuthService } from './auth.service'; // Importar el servicio de autenti
     // Puedes añadir estilos CSS aquí si es necesario
   ]
 })
-export class LoginComponent implements OnInit {
+export default class LoginComponent implements OnInit {
   loginForm: FormGroup; // Formulario reactivo para el login
   errorMessage: string | null = null; // Variable para mostrar mensajes de error
 
@@ -75,7 +75,7 @@ export class LoginComponent implements OnInit {
       const token = params['token']; // Intentar obtener el parámetro 'token'
       if (token) {
         this.authService.storeToken(token); // Si encontramos un token, lo almacenamos.
-        this.router.navigate(['/profile']); // Y redirigimos al usuario a la página de perfil.
+        this.router.navigate(['/auth/profile']); // Y redirigimos al usuario a la página de perfil.
       }
     });
   }
@@ -87,7 +87,7 @@ export class LoginComponent implements OnInit {
       this.authService.login(this.loginForm.value).subscribe(
         () => {
           // Si el login es exitoso, redirigir al perfil.
-          this.router.navigate(['/profile']);
+          this.router.navigate(['/auth/profile']);
         },
         (error) => {
           // Si hay un error en el login, mostrar un mensaje de error.

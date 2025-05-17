@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, computed, input } from '@angular/core';
 
 @Component({
   selector: 'lib-dropdowns',
@@ -7,14 +7,11 @@ import { Component } from '@angular/core';
   styleUrl: './dropdowns.component.css'
 })
 export class DropdownsComponent {
-  isOpen = false;
-  toggleDropdown() {
-    this.isOpen = !this.isOpen;
+  isOpen = input.required<boolean>();
+  /*
+  isOpenLog = computed((): void => {
+    console.log('Dropdown toggled:', this.isOpen());
   }
-  closeDropdown() {
-    this.isOpen = false;
-  }
-  openDropdown() {
-    this.isOpen = true;
-  }
+  );
+  */
 }

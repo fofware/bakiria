@@ -9,13 +9,15 @@ import { Router } from '@angular/router';
 import { Observable, of } from 'rxjs';
 import { tap, catchError } from 'rxjs/operators';
 import { isPlatformBrowser } from '@angular/common'; // Importar para verificar la plataforma
+import { environment } from '../../../environments/environment';
 
 @Injectable({
   providedIn: 'root' // Este servicio está disponible en toda la aplicación (singleton)
 })
 export class AuthService {
   // URL base de tu backend integrado (debe coincidir con el puerto de tu servidor SSR)
-  private baseUrl = 'http://localhost:3000/api';
+  private baseUrl = environment.AUTH_URL || 'http://localhost:3000';
+
 
   constructor(
     private http: HttpClient,
@@ -59,15 +61,22 @@ export class AuthService {
 
   // Envía credenciales al backend para el login local
   login(credentials: any): Observable<any> {
+    console.log('Login credentials:', credentials); // Log para depuración
+    console.log('Base URL:', `${this.baseUrl}/login`); // Log para depuración
     return this.http.post(`${this.baseUrl}/login`, credentials).pipe(
       tap((response: any) => {
+        console.log('Login response:', response); // Log para depuración
         // Si el login es exitoso y recibimos un token, lo almacenamos.
         if (response.token) {
           this.storeToken(response.token);
         }
-      })
+      }),
+      catchError((error) => {
+        console.error('Login error:', error); // Log para depuración
+        return of(error);
+      }
       // Aquí podrías añadir catchError para manejar errores específicos del login
-    );
+      ));
   }
 
   // Envía datos de usuario al backend para el registro local
@@ -86,13 +95,13 @@ export class AuthService {
   // Redirige al endpoint de Google en el backend para iniciar el flujo OAuth
   loginWithGoogle(): void {
     // Asegúrate de que esta URL coincida con tu ruta de inicio de Google en el backend SSR
-    window.location.href = 'http://localhost:3000/auth/google';
+    window.location.href = 'http://localhost:4444/auth/google';
   }
 
   // Redirige al endpoint de Facebook en el backend para iniciar el flujo OAuth
   loginWithFacebook(): void {
     // Asegúrate de que esta URL coincida con tu ruta de inicio de Facebook en el backend SSR
-    window.location.href = 'http://localhost:3000/auth/facebook';
+    window.location.href = 'http://localhost:4444/auth/facebook';
   }
 
   // Obtiene el perfil del usuario del backend (ruta protegida por JWT)
@@ -112,6 +121,6 @@ export class AuthService {
   // Cierra la sesión del usuario eliminando el token y redirigiendo a la página de login
   logout(): void {
     this.removeToken(); // Eliminar el token almacenado
-    this.router.navigate(['/login']); // Navegar a la ruta de login
+    this.router.navigate(['/auth/login']); // Navegar a la ruta de login
   }
 }

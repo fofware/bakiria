@@ -53,7 +53,7 @@ import { AuthService } from './auth.service'; // Importar el servicio de autenti
     // Puedes añadir estilos CSS aquí si es necesario
   ]
 })
-export class RegisterComponent implements OnInit {
+export default class RegisterComponent implements OnInit {
   registerForm: FormGroup; // Formulario reactivo para el registro
   errorMessage: string | null = null; // Variable para mostrar mensajes de error
 

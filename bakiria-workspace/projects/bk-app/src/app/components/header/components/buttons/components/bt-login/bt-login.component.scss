@@ -1,0 +1,58 @@
+:host {
+  position: relative;
+}
+/*
+.buttons .item{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  transition: all .3s ease-in-out;
+  border-radius: 48px * 0.5;
+}
+
+.buttons .item:active{
+  background-color: rgba(255, 255, 255, 0.2);
+}
+*/
+:host:hover{
+  background-color: rgba(255, 255, 255, 0.8);
+
+  path[fill]{
+    fill: #8475A1;
+  }
+
+  svg path{
+    fill: #8475A1;
+  }
+}
+
+:host .icon{
+  width: 48px;
+  height: 48px;
+}
+
+:host svg path
+{
+  fill: #C3C3C3;
+}
+
+
+.dropdown {
+  z-index: 1;
+  position: absolute;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: all .3s ease-in-out;
+  border-radius: 0px 0px 8px 8px;
+/*
+  border: 1px solid #350a8a;
+*/
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.8);
+  top: 53px;
+  right: -8px;
+  width: 360px;
+  background-color: white;
+  color: black;
+}

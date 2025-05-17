@@ -23,7 +23,11 @@ import { AuthService } from './auth.service'; // Importar el servicio de autenti
       <p><strong>Email:</strong> {{ userProfile.email }}</p>
       <p><strong>Proveedor:</strong> {{ userProfile.provider }}</p>
       <p *ngIf="userProfile.celular"><strong>Celular:</strong> {{ userProfile.celular }}</p>
-      </div>
+      <p *ngIf="userProfile.picture"><strong>Foto de Perfil:</strong></p>
+      <img *ngIf="userProfile.picture" [src]="userProfile.picture" alt="Foto de Perfil" style="width: 100px; height: 100px;">
+      <p *ngIf="userProfile.email_verified"><strong>Email Verificado:</strong> {{ userProfile.email_verified }}</p>
+      <p *ngIf="userProfile.wapp_verified"><strong>WhatsApp Verificado:</strong> {{ userProfile.wapp_verified }}</p>
+    </div>
     <div *ngIf="!userProfile">
       <p>Cargando perfil o no autenticado.</p>
     </div>
@@ -33,7 +37,7 @@ import { AuthService } from './auth.service'; // Importar el servicio de autenti
     // Puedes añadir estilos CSS aquí si es necesario
   ]
 })
-export class ProfileComponent implements OnInit {
+export default class ProfileComponent implements OnInit {
   userProfile: any = null; // Variable para almacenar los datos del perfil del usuario
   private authService = inject(AuthService); // Inyectar el servicio de autenticación
   private router = inject(Router); // Inyectar Router para la navegación
@@ -49,6 +53,7 @@ export class ProfileComponent implements OnInit {
         (profile) => {
           // Si la solicitud es exitosa, almacenamos los datos del perfil.
           this.userProfile = profile;
+          console.log('Perfil de usuario:', this.userProfile);
         },
         (error:any) => {
           // Si hay un error al obtener el perfil (ej. token inválido/expirado),
@@ -57,6 +62,7 @@ export class ProfileComponent implements OnInit {
           this.authService.logout(); // Cerrar sesión para eliminar el token inválido
         }
       );
+
     } else {
       // Si el usuario no está autenticado (no hay token válido), lo redirigimos a la página de login.
       this.router.navigate(['/login']);
