@@ -19,13 +19,4 @@ export default {
   }
   ,public: process.env.PUBLIC_HTML
   ,app_port: process.env.APP_PORT
-  ,"web":{
-    "client_id":"298333149753-2b3fs6kjq84t45jlf3l26fspr17o340q.apps.googleusercontent.com",
-    "project_id":"bkauth",
-    "auth_uri":"https://accounts.google.com/o/oauth2/auth",
-    "token_uri":"https://oauth2.googleapis.com/token",
-    "auth_provider_x509_cert_url":"https://www.googleapis.com/oauth2/v1/certs",
-    "client_secret":"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",
-    "redirect_uris":["http://localhost:4444/api/auth/google/callback"]
-  }
 }
