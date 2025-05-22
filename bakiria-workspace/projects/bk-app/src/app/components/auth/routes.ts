@@ -5,16 +5,16 @@ export const routes: Routes = [
   // Ruta para el login
   {
     path: 'login',
-    loadComponent: () => import('./login.component')
+    loadComponent: () => import('./login/login.component')
   },
   // Ruta para el registro
   {
     path: 'register',
-    loadComponent: () => import( './register.component')
+    loadComponent: () => import( './register/register.component')
   },
   // Ruta para el perfil, protegida por AuthGuard
   { path: 'profile',
-    loadComponent: () => import( './profile.component'),
+    loadComponent: () => import( './profile/profile.component'),
     canActivate: [AuthGuard] // Protege esta ruta con AuthGuard
   },
   // Ruta por defecto: redirige a /profile

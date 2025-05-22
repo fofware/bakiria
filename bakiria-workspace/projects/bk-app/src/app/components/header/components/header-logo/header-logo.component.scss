@@ -4,7 +4,7 @@
   */
   display: flex;
   justify-content: center;
-  align-items:flex-end;
+  align-items: center;
   height: 60px;
   padding: 10px;
 }
@@ -16,3 +16,10 @@ img {
   background-color: #fff;
 }
 
+.branch-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 60px;
+  padding: 10px;
+}

@@ -1,4 +1,5 @@
-import { Component } from '@angular/core';
+import { AuthService } from './../../../../../auth/auth.service';
+import { Component, inject } from '@angular/core';
 
 @Component({
   selector: 'app-bt-login',
@@ -7,7 +8,9 @@ import { Component } from '@angular/core';
   styleUrl: './bt-login.component.scss'
 })
 export class BtLoginComponent {
- isOpen = false;
+  private authService = inject(AuthService); // Inyectar el servicio de autenticación
+  user:any = this.authService.loggedUser; // Obtener el perfil del usuario desde el servicio de autenticación
+  isOpen = false;
 
   toggleDropdown() {
     this.isOpen = !this.isOpen;

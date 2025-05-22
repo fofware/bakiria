@@ -7,7 +7,7 @@ import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 
-import { AuthService } from './auth.service'; // Importar el servicio de autenticación
+import { AuthService } from '../auth.service'; // Importar el servicio de autenticación
 
 @Component({
   selector: 'app-profile',
@@ -16,6 +16,7 @@ import { AuthService } from './auth.service'; // Importar el servicio de autenti
     CommonModule, // Para directivas comunes como *ngIf
     RouterModule // Para routerLink si se necesitara en el template
   ],
+/*
   template: `
     <h2>Perfil de Usuario</h2>
     <div *ngIf="userProfile">
@@ -33,19 +34,39 @@ import { AuthService } from './auth.service'; // Importar el servicio de autenti
     </div>
     <button (click)="logout()">Cerrar Sesión</button>
   `,
+  */
+  template: `
+    <h2>Perfil de Usuario</h2>
+    @if(user.value()){
+      @let userProfile = user.value();
+      <div *ngIf="userProfile">
+        <p><strong>Nombre:</strong> {{ userProfile.displayName }}</p>
+        <p><strong>Email:</strong> {{ userProfile.email }}</p>
+        <p><strong>Proveedor:</strong> {{ userProfile.provider }}</p>
+        <p *ngIf="userProfile.celular"><strong>Celular:</strong> {{ userProfile.celular }}</p>
+        <p *ngIf="userProfile.picture"><strong>Foto de Perfil:</strong></p>
+        <img *ngIf="userProfile.picture" [src]="userProfile.picture" alt="Foto de Perfil" style="width: 100px; height: 100px;">
+        <p *ngIf="userProfile.email_verified"><strong>Email Verificado:</strong> {{ userProfile.email_verified }}</p>
+        <p *ngIf="userProfile.wapp_verified"><strong>WhatsApp Verificado:</strong> {{ userProfile.wapp_verified }}</p>
+      </div>
+      <div *ngIf="!userProfile">
+        <p>Cargando perfil o no autenticado.</p>
+      </div>
+      <button (click)="logout()">Cerrar Sesión</button>
+    }
+  `,
   styles: [
     // Puedes añadir estilos CSS aquí si es necesario
   ]
 })
+
 export default class ProfileComponent implements OnInit {
-  userProfile: any = null; // Variable para almacenar los datos del perfil del usuario
   private authService = inject(AuthService); // Inyectar el servicio de autenticación
   private router = inject(Router); // Inyectar Router para la navegación
-
-  constructor(
-  ) { }
-
+  user:any = this.authService.loggedUser; // Obtener el perfil del usuario desde el servicio de autenticación
+  //userProfile : any; // Variable para almacenar el perfil del usuario
   ngOnInit(): void {
+    /*
     // Al inicializar el componente, verificamos si el usuario está autenticado.
     if (this.authService.isAuthenticated()) {
       // Si está autenticado, intentamos obtener los datos del perfil del backend.
@@ -67,6 +88,7 @@ export default class ProfileComponent implements OnInit {
       // Si el usuario no está autenticado (no hay token válido), lo redirigimos a la página de login.
       this.router.navigate(['/login']);
     }
+    */
   }
 
   // Llama al método logout del servicio de autenticación para cerrar la sesión.

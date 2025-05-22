@@ -8,7 +8,7 @@ import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 
-import { AuthService } from './auth.service'; // Importar el servicio de autenticación
+import { AuthService } from '../auth.service'; // Importar el servicio de autenticación
 
 @Component({
   selector: 'app-register',

@@ -3,64 +3,35 @@
 // Permite login local con email/password y redirecciona para login social.
 // Lee el token de los query parameters después del login social.
 
-import { Component, OnInit } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 // Importar módulos necesarios directamente en el componente standalone
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Router, ActivatedRoute, RouterModule } from '@angular/router';
 
-import { AuthService } from './auth.service'; // Importar el servicio de autenticación
+import { AuthService } from '../auth.service'; // Importar el servicio de autenticación
 
 @Component({
   selector: 'app-login',
   standalone: true, // Marcar como componente standalone
+  templateUrl: './login.component.html', // Ruta al template HTML del componente
+  styleUrls: ['./login.component.scss'], // Ruta a los estilos CSS del componente
   imports: [
     CommonModule, // Para directivas comunes como *ngIf
     ReactiveFormsModule, // Para formularios reactivos
     RouterModule // Para routerLink y ActivatedRoute
   ],
-  template: `
-    <h2>Login de Usuario</h2>
-    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
-      <div>
-        <label for="email">Email:</label>
-        <input id="email" type="email" formControlName="email">
-        <div *ngIf="loginForm.get('email')?.invalid && loginForm.get('email')?.touched">
-          Email es requerido y debe ser válido.
-        </div>
-      </div>
-      <div>
-        <label for="password">Contraseña:</label>
-        <input id="password" type="password" formControlName="password">
-        <div *ngIf="loginForm.get('password')?.invalid && loginForm.get('password')?.touched">
-          Contraseña es requerida.
-        </div>
-      </div>
-      <button type="submit" [disabled]="loginForm.invalid">Iniciar Sesión</button>
-    </form>
-
-    <p>O inicia sesión con:</p>
-    <button (click)="loginWithGoogle()">Google</button>
-    <button (click)="loginWithFacebook()">Facebook</button>
-
-    <div *ngIf="errorMessage" style="color: red;">
-      {{ errorMessage }}
-    </div>
-  `,
-  styles: [
-    // Puedes añadir estilos CSS aquí si es necesario
-  ]
 })
 export default class LoginComponent implements OnInit {
   loginForm: FormGroup; // Formulario reactivo para el login
   errorMessage: string | null = null; // Variable para mostrar mensajes de error
 
-  constructor(
-    private fb: FormBuilder, // Inyectar FormBuilder para crear el formulario
-    private authService: AuthService, // Inyectar el servicio de autenticación
-    private router: Router, // Inyectar Router para la navegación
-    private activatedRoute: ActivatedRoute // Inyectar ActivatedRoute para leer query parameters
-  ) {
+  private fb = inject(FormBuilder); // Inyectar FormBuilder para crear el formulario
+  private authService = inject(AuthService); // Inyectar el servicio de autenticación
+  private router = inject(Router); // Inyectar Router para la navegación
+  private activatedRoute = inject(ActivatedRoute); // Inyectar ActivatedRoute para leer query parameters
+
+  constructor() {
     // Inicializar el formulario con los campos y validadores
     this.loginForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]], // Campo email: requerido y formato email
@@ -100,11 +71,13 @@ export default class LoginComponent implements OnInit {
 
   // Inicia el flujo de login con Google llamando al servicio de autenticación
   loginWithGoogle(): void {
-    this.authService.loginWithGoogle();
+    //this.authService.loginWithGoogle(); // Redirigir al endpoint de Google en el backend
+    this.authService.loginWithSocial('google');
   }
 
   // Inicia el flujo de login con Facebook llamando al servicio de autenticación
   loginWithFacebook(): void {
-    this.authService.loginWithFacebook();
+    //this.authService.loginWithFacebook();
+    this.authService.loginWithSocial('facebook');
   }
 }

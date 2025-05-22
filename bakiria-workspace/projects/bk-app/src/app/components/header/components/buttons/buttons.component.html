@@ -1,12 +1,12 @@
 <div class="buttons">
   @if(user()?.isLoggedIn){
-    <app-logged
+    <app-bt-logged
       [user]="user()"
     />
   }@else{
-      <app-bt-login class="item">
-        <app-login></app-login>
-      </app-bt-login>
+    <app-bt-login class="item">
+      <app-login></app-login>
+    </app-bt-login>
   }
 </div>
 <!--

@@ -3,13 +3,14 @@
 // Utiliza HttpClient para comunicarse con el backend y localStorage para almacenar el token JWT.
 // Incluye verificación de plataforma para SSR.
 
-import { Injectable, Inject, PLATFORM_ID } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { Injectable, PLATFORM_ID, inject, signal } from '@angular/core';
+import { HttpClient, HttpHeaders, httpResource } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { Observable, of } from 'rxjs';
 import { tap, catchError } from 'rxjs/operators';
 import { isPlatformBrowser } from '@angular/common'; // Importar para verificar la plataforma
 import { environment } from '../../../environments/environment';
+import { AppService } from '../../service/app.service';
 
 @Injectable({
   providedIn: 'root' // Este servicio está disponible en toda la aplicación (singleton)
@@ -17,15 +18,33 @@ import { environment } from '../../../environments/environment';
 export class AuthService {
   // URL base de tu backend integrado (debe coincidir con el puerto de tu servidor SSR)
   private baseUrl = environment.AUTH_URL || 'http://localhost:3000';
+  private http = inject(HttpClient);
+  private router = inject(Router);
+  private platformId = inject(PLATFORM_ID);
 
-
-  constructor(
-    private http: HttpClient,
-    private router: Router,
-    // Inyectar PLATFORM_ID para verificar si estamos en el navegador o en el servidor
-    @Inject(PLATFORM_ID) private platformId: Object
-  ) { }
-
+  //app = inject(AppService).app;
+  //user = inject(AppService).user;
+  token = signal<string | null>(null);
+  loggedUser = httpResource(
+    () => ({
+      url: `${this.baseUrl}/profile`,
+      method: 'GET',
+      headers: {
+        Authorization: `Bearer ${this.token()}`
+      }
+    }),
+    {
+      defaultValue: {
+        displayName: 'Desconocido',
+        email: 'Desconocido',
+        name: 'Desconocido',
+        isLoggedIn: false,
+        role: 'cliente',
+        token: this.getToken() || '',
+        picture: null
+      }
+    }
+  );
   // Almacena el token JWT en localStorage si estamos en el navegador
   storeToken(token: string): void {
     if (isPlatformBrowser(this.platformId)) {
@@ -36,6 +55,7 @@ export class AuthService {
   // Obtiene el token JWT de localStorage si estamos en el navegador
   getToken(): string | null {
     if (isPlatformBrowser(this.platformId)) {
+      this.token.set( localStorage.getItem('jwt_token'));
       return localStorage.getItem('jwt_token');
     }
     return null; // Devolver null si no estamos en el navegador (servidor)
@@ -45,18 +65,46 @@ export class AuthService {
   removeToken(): void {
     if (isPlatformBrowser(this.platformId)) {
       localStorage.removeItem('jwt_token');
+      this.token.set(null);
+      /*
+      this.user.set({
+        name: 'Desconocido',
+        isLoggedIn: false,
+        role: 'cliente',
+        token: this.getToken() || '',
+        image: null
+      });
+      */
     }
   }
 
   // Verifica si el usuario está autenticado (basado en la existencia del token en el navegador)
   isAuthenticated(): boolean {
-     if (isPlatformBrowser(this.platformId)) {
+    if (isPlatformBrowser(this.platformId)) {
         return !!this.getToken();
-     }
-     // Durante el renderizado en el servidor, asumimos que el usuario no está autenticado
-     // para evitar intentar cargar datos de perfil sin un token válido.
-     // La autenticación real ocurre en el navegador después de la hidratación.
-     return false;
+    }
+    // Durante el renderizado en el servidor, asumimos que el usuario no está autenticado
+    // para evitar intentar cargar datos de perfil sin un token válido.
+    // La autenticación real ocurre en el navegador después de la hidratación.
+    return false;
+
+  }
+
+  // Envía datos de usuario al backend para el registro local
+  register(userData: any): Observable<any> {
+    return this.http.post(`${this.baseUrl}/register`, userData).pipe(
+      tap((response: any) => {
+        // Si el registro es exitoso y recibimos un token (si el backend lo devuelve), lo almacenamos.
+        if (response.token) {
+          this.storeToken(response.token);
+        }
+      })
+      // Aquí podrías añadir catchError para manejar errores específicos del registro
+    );
+  }
+
+  loginWithSocial(providerId: string): void {
+    window.location.href = `${this.baseUrl}/auth/${providerId}`;
   }
 
   // Envía credenciales al backend para el login local
@@ -79,19 +127,6 @@ export class AuthService {
       ));
   }
 
-  // Envía datos de usuario al backend para el registro local
-  register(userData: any): Observable<any> {
-    return this.http.post(`${this.baseUrl}/register`, userData).pipe(
-      tap((response: any) => {
-        // Si el registro es exitoso y recibimos un token (si el backend lo devuelve), lo almacenamos.
-        if (response.token) {
-          this.storeToken(response.token);
-        }
-      })
-      // Aquí podrías añadir catchError para manejar errores específicos del registro
-    );
-  }
-
   // Redirige al endpoint de Google en el backend para iniciar el flujo OAuth
   loginWithGoogle(): void {
     // Asegúrate de que esta URL coincida con tu ruta de inicio de Google en el backend SSR
@@ -104,6 +139,20 @@ export class AuthService {
     window.location.href = 'http://localhost:4444/auth/facebook';
   }
 
+  /*
+  getProfileRs(): any{
+    const usuario = httpResource(() =>
+      ({
+        url: `${this.baseUrl}/profile`,
+        method: 'GET',
+        headers: {
+          Authorization: `Bearer ${this.getToken()}`
+        }
+      })
+    );
+    return usuario;
+  }
+  */
   // Obtiene el perfil del usuario del backend (ruta protegida por JWT)
   getProfile(): Observable<any> {
     const token = this.getToken(); // Obtener el token almacenado

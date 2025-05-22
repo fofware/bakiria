@@ -106,6 +106,7 @@ router.get('/profile', passport.authenticate('jwt', { session: false }), async (
       userProfile.picture = provider.picture;
     }
   }
+  console.log('Perfil de usuario:', userProfile);
   res.json(userProfile);
 });
 
