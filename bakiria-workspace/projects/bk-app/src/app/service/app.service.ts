@@ -1,21 +1,19 @@
 import { Injectable, signal } from '@angular/core';
 
 export interface User {
-  name?: string;
+  displayName: string;
   isLoggedIn: boolean;
-  role: string;
-  token: string;
-  image: string | null;
+  roles: string[];
+  picture: string | null;
 }
 
 const roles = ['admin', 'jefe', 'compras', 'cocinero', 'cliente', 'vendedor'];
 
 const resetUsuer:User = {
-  name: 'Desconocido',
+  displayName: 'Visitante',
   isLoggedIn: false,
-  role: 'cliente',
-  token: '',
-  image: null
+  roles: ['guest'],
+  picture: null
 };
 
 export interface appData {

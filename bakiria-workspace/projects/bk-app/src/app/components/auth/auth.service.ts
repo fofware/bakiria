@@ -10,11 +10,12 @@ import { Observable, of } from 'rxjs';
 import { tap, catchError } from 'rxjs/operators';
 import { isPlatformBrowser } from '@angular/common'; // Importar para verificar la plataforma
 import { environment } from '../../../environments/environment';
-import { AppService } from '../../service/app.service';
+
 
 @Injectable({
   providedIn: 'root' // Este servicio está disponible en toda la aplicación (singleton)
 })
+
 export class AuthService {
   // URL base de tu backend integrado (debe coincidir con el puerto de tu servidor SSR)
   private baseUrl = environment.AUTH_URL || 'http://localhost:3000';
@@ -22,25 +23,25 @@ export class AuthService {
   private router = inject(Router);
   private platformId = inject(PLATFORM_ID);
 
-  //app = inject(AppService).app;
-  //user = inject(AppService).user;
-  token = signal<string | null>(null);
+  token = signal<string | null>(this.getToken()); // Signal para almacenar el token JWT
+
   loggedUser = httpResource(
-    () => ({
-      url: `${this.baseUrl}/profile`,
-      method: 'GET',
-      headers: {
-        Authorization: `Bearer ${this.token()}`
-      }
-    }),
+    () => {
+      const token = !!this.token(); // Obtener el token actual
+      return token ? {
+        url: `${this.baseUrl}/logged`,
+        method: 'GET',
+        headers: {
+          Authorization: `Bearer ${this.token()}`
+        }
+      } : undefined;
+    },
     {
       defaultValue: {
-        displayName: 'Desconocido',
+        displayName: 'Visitante',
         email: 'Desconocido',
-        name: 'Desconocido',
         isLoggedIn: false,
-        role: 'cliente',
-        token: this.getToken() || '',
+        roles: ['guest'],
         picture: null
       }
     }
@@ -49,13 +50,14 @@ export class AuthService {
   storeToken(token: string): void {
     if (isPlatformBrowser(this.platformId)) {
       localStorage.setItem('jwt_token', token);
+      this.token.set(token); // Actualiza el signal con el nuevo token
     }
   }
 
   // Obtiene el token JWT de localStorage si estamos en el navegador
   getToken(): string | null {
     if (isPlatformBrowser(this.platformId)) {
-      this.token.set( localStorage.getItem('jwt_token'));
+      //this.token.set( localStorage.getItem('jwt_token'));
       return localStorage.getItem('jwt_token');
     }
     return null; // Devolver null si no estamos en el navegador (servidor)
@@ -66,22 +68,17 @@ export class AuthService {
     if (isPlatformBrowser(this.platformId)) {
       localStorage.removeItem('jwt_token');
       this.token.set(null);
-      /*
-      this.user.set({
-        name: 'Desconocido',
-        isLoggedIn: false,
-        role: 'cliente',
-        token: this.getToken() || '',
-        image: null
-      });
-      */
     }
   }
 
   // Verifica si el usuario está autenticado (basado en la existencia del token en el navegador)
   isAuthenticated(): boolean {
     if (isPlatformBrowser(this.platformId)) {
-        return !!this.getToken();
+        if (!this.token()) {
+          // Si el token no está disponible, intentamos obtenerlo de localStorage
+          this.token.set(this.getToken());
+        }
+        return !!this.token(); // Devuelve true si hay un token, false si no
     }
     // Durante el renderizado en el servidor, asumimos que el usuario no está autenticado
     // para evitar intentar cargar datos de perfil sin un token válido.
@@ -109,11 +106,8 @@ export class AuthService {
 
   // Envía credenciales al backend para el login local
   login(credentials: any): Observable<any> {
-    console.log('Login credentials:', credentials); // Log para depuración
-    console.log('Base URL:', `${this.baseUrl}/login`); // Log para depuración
     return this.http.post(`${this.baseUrl}/login`, credentials).pipe(
       tap((response: any) => {
-        console.log('Login response:', response); // Log para depuración
         // Si el login es exitoso y recibimos un token, lo almacenamos.
         if (response.token) {
           this.storeToken(response.token);
@@ -139,20 +133,6 @@ export class AuthService {
     window.location.href = 'http://localhost:4444/auth/facebook';
   }
 
-  /*
-  getProfileRs(): any{
-    const usuario = httpResource(() =>
-      ({
-        url: `${this.baseUrl}/profile`,
-        method: 'GET',
-        headers: {
-          Authorization: `Bearer ${this.getToken()}`
-        }
-      })
-    );
-    return usuario;
-  }
-  */
   // Obtiene el perfil del usuario del backend (ruta protegida por JWT)
   getProfile(): Observable<any> {
     const token = this.getToken(); // Obtener el token almacenado

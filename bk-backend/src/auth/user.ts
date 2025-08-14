@@ -31,6 +31,7 @@ interface IAuthUser extends Document {
   wapp_verified?: boolean; // Solo para usuarios locales
   picture?: string; // URL de la imagen de perfil (opcional)
   providers?: mongoose.Types.ObjectId[]; // Array de referencias a proveedores
+  roles?: string[]; // Array de roles del usuario
   // Puedes añadir más campos según necesites (ej. foto de perfil, etc.)
 }
 
@@ -44,6 +45,7 @@ const AuthUserSchema: Schema = new Schema({
   wapp_verified: { type: Boolean, default: false }, // Solo para usuarios locales
   picture: { type: String }, // URL de la imagen de perfil (opcional)
   providers: [{type: Schema.Types.ObjectId, ref: 'AuthProvider'}], // Array de proveedores para soportar múltiples
+  roles: { type: [String], default: ['cliente'] }, // Array de roles del usuario
 },
 {
   strict: false, // Permitir campos adicionales
@@ -69,7 +71,6 @@ const findOrCreateUser = async (profile:
   try {
     let user: IAuthUser | null = null;
     let authProvider: IAuthProvider | null = null;
-    let providers = [];
 
 
     // Buscar usuario según el proveedor
@@ -89,6 +90,7 @@ const findOrCreateUser = async (profile:
       if ( user && authProvider) {
         const providerId = authProvider._id as mongoose.Types.ObjectId;
         user.email_verified = true;
+        user.picture = profile.picture || authProvider.picture;
         if (!user.providers) user.providers = [];
         user.providers.includes(providerId) || user.providers.push(providerId);
         await user.save();

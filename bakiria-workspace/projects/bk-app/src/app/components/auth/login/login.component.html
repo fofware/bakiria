@@ -2,14 +2,14 @@
     <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
       <div>
         <label for="email">Email:</label>
-        <input id="email" type="email" formControlName="email">
+        <input class="form-control" id="email" type="email" formControlName="email">
         <div *ngIf="loginForm.get('email')?.invalid && loginForm.get('email')?.touched">
           Email es requerido y debe ser válido.
         </div>
       </div>
       <div>
         <label for="password">Contraseña:</label>
-        <input id="password" type="password" formControlName="password">
+        <input class="form-control" id="password" type="password" formControlName="password">
         <div *ngIf="loginForm.get('password')?.invalid && loginForm.get('password')?.touched">
           Contraseña es requerida.
         </div>
@@ -18,8 +18,8 @@
     </form>
 
     <p>O inicia sesión con:</p>
-    <button (click)="loginWithGoogle()">Google</button>
-    <button (click)="loginWithFacebook()">Facebook</button>
+    <div style="width: 100%;"><button (click)="loginWithGoogle()">Google</button></div>
+    <div style="width: 100%;"><button (click)="loginWithFacebook()">Facebook</button></div>
 
     <div *ngIf="errorMessage" style="color: red;">
       {{ errorMessage }}

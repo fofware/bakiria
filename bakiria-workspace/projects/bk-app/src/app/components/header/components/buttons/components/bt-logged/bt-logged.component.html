@@ -1,4 +1,4 @@
-<img class="icon" src="{{user()?.image || 'favicon.ico' }}" alt="User profile avatar showing the logged-in user">
+<img class="icon" src="{{user()?.picture || 'favicon.ico' }}" alt="User profile avatar showing the logged-in user">
 @let data = user();
 <pre style="color:black">
   {{data | json}}

@@ -1,5 +1,5 @@
 import { Router, Request, Response, RequestHandler } from 'express';
-import jwt from 'jsonwebtoken';
+import jwt, { SignOptions } from 'jsonwebtoken';
 import { IAuthUser, AuthUser, findOrCreateUser } from './user';
 import dotenv from 'dotenv';
 //import { passport } from './passport';
@@ -10,9 +10,14 @@ dotenv.config();
 const router = Router();
 
 const JWT_SECRET = process.env['JWT_SECRET'] || 'your_super_secret_key';
-const JWT_EXPIRATION = process.env['JWT_EXPIRATION'] || '1h'; // 1 hora por defecto
-const JWT_EXPIRATION_REFRESH = process.env['JWT_REFRESH_EXPIRATION'] || '2h'; // 2 horas por defecto
+const JWT_EXPIRATION = process.env['JWT_EXPIRATION'] || '24h'; // 1 hora por defecto
+const JWT_EXPIRATION_REFRESH = process.env['JWT_REFRESH_EXPIRATION'] || '720h'; // 2 horas por defecto
 
+const genToken = (user: IAuthUser) => {
+  // Genera un token JWT para el usuario
+  const options: SignOptions = { expiresIn: JWT_EXPIRATION as jwt.SignOptions["expiresIn"] };
+  return jwt.sign({ id: user._id }, JWT_SECRET, options);
+}
 
 // Ruta para registro local
 router.get('/auth', (req, res) => {
@@ -42,7 +47,8 @@ router.post('/register', (async (req: Request, res: Response) => {
             return res.status(500).json({ message: 'Error al registrar usuario.' });
         }
         // Después de registrar, puedes loguearlo automáticamente y devolver un token
-        const token = jwt.sign({ id: user._id }, JWT_SECRET, { expiresIn: '1h' }); // Token expira en 1 hora
+        //const token = jwt.sign({ id: user._id }, JWT_SECRET, { expiresIn: '24h' }); // Token expira en 1 hora
+        const token = genToken(user);
         return res.json({ token });
     });
   } catch (err) {
@@ -58,11 +64,21 @@ router.post('/login', passport.authenticate('local', { session: false }), (req, 
   // req.user es de tipo any por defecto en Express, puedes castearlo si es necesario
   const user = req.user as IAuthUser;
 //  const token = jwt.sign({ id: user._id }, JWT_SECRET, { expiresIn: '1h' }); // Token expira en 1 hora
-  const token = jwt.sign({ id: user._id }, JWT_SECRET, { expiresIn: '1h' }); // Token expira en 1 hora
+  //const token = jwt.sign({ id: user._id }, JWT_SECRET, { expiresIn: '24h' }); // Token expira en 1 hora
+  const token = genToken(user);
+
   res.json({ token });
 });
 
 // Rutas para autenticación con Google
+router.get('/auth/providers', (req, res) => {
+  // Devolver los proveedores de autenticación disponibles
+  res.json([
+      { name: 'google', displayName: 'Google', icon: 'https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg' },
+      { name: 'facebook', displayName: 'Facebook', icon: 'https://upload.wikimedia.org/wikipedia/commons/5/51/Facebook_f_logo_%282019%29.svg' },
+    ]);
+});
+
 router.get('/auth/google',
   passport.authenticate('google', { scope: ['profile', 'email'], session: false })); // session: false porque usamos JWT
 
@@ -71,7 +87,8 @@ router.get('/auth/google/callback',
   (req, res) => {
       // Autenticación con Google exitosa, req.user contiene el usuario.
       const user = req.user as IAuthUser;
-      const token = jwt.sign({ id: user._id }, JWT_SECRET, { expiresIn: '1h' }); // Token expira en 1 hora
+      //const token = jwt.sign({ id: user._id }, JWT_SECRET, { expiresIn: '24h' }); // Token expira en 1 hora
+      const token = genToken(user);
       // Redirigir al frontend, pasando el token en la URL (menos seguro, pero simple para ejemplo)
       // En producción, considera un enfoque más seguro (ej. postMessage, o una página intermedia)
       res.redirect(`http://localhost:4200/auth/login?token=${token}`); // Reemplazar 4200 con el puerto de tu app Angular
@@ -86,7 +103,8 @@ router.get('/auth/facebook/callback',
   (req, res) => {
       // Autenticación con Facebook exitosa, req.user contiene el usuario.
       const user = req.user as IAuthUser;
-      const token = jwt.sign({ id: user._id }, JWT_SECRET, { expiresIn: '1h' }); // Token expira en 1 hora
+      //const token = jwt.sign({ id: user._id }, JWT_SECRET, { expiresIn: '1h' }); // Token expira en 1 hora
+      const token = genToken(user);
       // Redirigir al frontend, pasando el token en la URL
       res.redirect(`http://localhost:4200/auth/login?token=${token}`); // Reemplazar 4200 con el puerto de tu app Angular
   });
@@ -109,6 +127,30 @@ router.get('/profile', passport.authenticate('jwt', { session: false }), async (
   console.log('Perfil de usuario:', userProfile);
   res.json(userProfile);
 });
+
+router.get('/logged', 
+  passport.authenticate('jwt', { session: false }), 
+  (req, res) => {
+  // Verificar si el usuario está autenticado
+    if (req.isAuthenticated()) {
+      // Si está autenticado, devolver el perfil del usuario
+      const user = req.user as IAuthUser;
+      console.log('Usuario logged:', user);
+      
+      res.json({ 
+        displayName: user.displayName, 
+        email: user.email, 
+        picture: user.picture,
+        roles: user.roles,
+      });
+      
+      //res.json(user);
+    } else {
+      // Si no está autenticado, devolver un error o un mensaje
+      res.status(401).json({ message: 'No autenticado' });
+    }
+  }
+);
 
 router.get('/check', (async (req: Request, res: Response) => {
   const { fld, data } = req.query || req.params || req.body;

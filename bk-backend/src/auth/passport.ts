@@ -18,7 +18,6 @@ async (email, password, done) => {
     try {
         // 1. Buscar usuario local por email en la base de datos.
         const user = await AuthUser.findOne({ email: email });
-
         if (!user) {
             return done(null, false, { message: 'Email incorrecto.' });
         }
@@ -49,9 +48,6 @@ async (accessToken, refreshToken, profile, done) => {
     // Aquí se llama después de que Google autentica al usuario.
     // 'profile' contiene la información del usuario de Google.
     // Buscar o crear usuario en tu base de datos.
-    console.log('Perfil de Google:', profile);
-    console.log('Acceso Token:', accessToken);
-    console.log('Refresh Token:', refreshToken);
     findOrCreateUser({
         providerName: 'google',
         providerId: profile.id,
@@ -106,7 +102,6 @@ passport.use(new JwtStrategy(jwtOptions, async (jwt_payload, done) => {
         // Buscar usuario por ID en la base de datos
         console.log('Payload del JWT:', jwt_payload);
         const user = await AuthUser.findById(jwt_payload.id);
-
         if (user) {
             return done(null, user); // Usuario encontrado, autenticación exitosa
         } else {
