@@ -1,0 +1,60 @@
+# Node
+node_modules
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+package-lock.json
+yarn.lock
+
+# TypeScript
+*.tsbuildinfo
+
+# Angular/CLI
+/dist/
+/out-tsc/
+/.angular/cache/
+/.angular/local/
+
+# Build outputs
+bakiria-workspace/dist/
+bakiria-workspace/out-tsc/
+bakiria-workspace/.angular/
+bk-backend/dist/
+bkwrks/dist/
+bkwrks/out-tsc/
+bkwrks/.angular/
+
+# Environment files
+.env
+*.env
+
+# Coverage
+coverage/
+bakiria-workspace/coverage/
+bkwrks/coverage/
+
+# IDEs
+.vscode/
+.idea/
+*.sublime-workspace
+*.sublime-project
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Misc
+*.log
+*.tgz
+
+# Libs
+bakiria-workspace/projects/bk-lib/dist/
+bakiria-workspace/projects/bk-lib/out-tsc/
+
+# Others
+bakiria-workspace/tmp/
+bkwrks/tmp/
+
+# Optional: ignore local config
+bakiria-workspace/src/environments/environment.*.ts
+bakiria-workspace/projects/bk-app/src/environments/environment.*.ts
